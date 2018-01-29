@@ -502,8 +502,10 @@ func (c *Client) startTLSIfRequired(f *streamFeatures, o *Options, domain string
 func (c *Client) startStream(o *Options, domain string) (*streamFeatures, error) {
 	if o.Debug {
 		c.p = xml.NewDecoder(tee{c.conn, os.Stderr})
+		c.p.Strict = false
 	} else {
 		c.p = xml.NewDecoder(c.conn)
+		c.p.Strict = false
 	}
 
 	_, err := fmt.Fprintf(c.conn, "<?xml version='1.0'?>\n"+
@@ -756,6 +758,7 @@ type XMLElement struct {
 func (e *XMLElement) String() string {
 	r := bytes.NewReader([]byte(e.InnerXML))
 	d := xml.NewDecoder(r)
+	d.Strict = false
 	var buf bytes.Buffer
 	for {
 		tok, err := d.Token()
